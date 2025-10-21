@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic360 - Sistema Integral</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #eef2ff;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --info: #4895ef;
+            --warning: #f72585;
+            --danger: #e63946;
+            --light: #f8f9fc;
+            --dark: #2b2d42;
+            --gray: #6c757d;
+            --gray-light: #f1f3f9;
+            --sidebar-width: 280px;
+            --border-radius: 16px;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Pantalla de Login/Registro */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 20px;
+            width: 100%;
+        }
+        
+        .auth-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h2 {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .auth-header p {
+            color: var(--dark);
+            font-size: 16px;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+            background: #f8f9fc;
+            border-radius: 12px;
+            padding: 5px;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            border-radius: 10px;
+        }
+        
+        .auth-tab.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9fc;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.5);
+        }
+        
+        .user-type-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .user-type {
+            text-align: center;
+            padding: 20px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fc;
+        }
+        
+        .user-type.selected {
+            border-color: var(--primary);
+            background: linear-gradient(to bottom, rgba(67, 97, 238, 0.1), rgba(58, 12, 163, 0.05));
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-type i {
+            font-size: 32px;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-type.selected i {
+            color: var(--primary);
+        }
+        
+        .user-type h4 {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .user-type p {
+            font-size: 13px;
+            color: var(--dark);
+            opacity: 0.8;
+        }
+        
+        /* Sidebar Modernizado */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding: 25px 0;
+            overflow-y: auto;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 26px;
+            margin-top: 15px;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-info {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .user-info img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-role {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu ul {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            padding: 15px 25px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-menu li:hover {
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.1), transparent);
+            border-left: 4px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .sidebar-menu li.active {
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent);
+            border-left: 4px solid white;
+        }
+        
+        .sidebar-menu i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        /* Main Content Modernizado */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            width: calc(100% - var(--sidebar-width));
+            background: #f8f9fc;
+            transition: var(--transition);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--gray-light);
+            padding: 12px 20px;
+            border-radius: 50px;
+            width: 400px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+        
+        .search-bar:focus-within {
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            margin-left: 12px;
+            font-size: 16px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            background: var(--primary-light);
+            padding: 8px 15px 8px 8px;
+            border-radius: 50px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+        }
+        
+        .user-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-profile img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            box-shadow: 0 3px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        /* Dashboard Cards */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        .stat-card {
+            text-align: center;
+        }
+        
+        .stat-card .icon-container {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 28px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+            color: white;
+        }
+        
+        .stat-card .number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin: 15px 0;
+            color: var(--primary);
+        }
+        
+        .stat-card .label {
+            color: var(--dark);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        /* Títulos de sección */
+        .section-title {
+            margin: 25px 0 20px;
+            color: var(--dark);
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 12px;
+            color: var(--primary);
+        }
+        
+        /* Selector de semestre */
+        .semester-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .semester-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            min-width: 180px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .semester-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .semester-card.active {
+            border-color: var(--primary);
+            background: linear-gradient(to bottom, rgba(67, 97, 238, 0.1), rgba(58, 12, 163, 0.05));
+        }
+        
+        .semester-card h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .semester-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Tarjetas de cursos */
+        .courses-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .course-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .course-card h3 {
+            margin-bottom: 12px;
+            color: var(--dark);
+            font-size: 1.2rem;
+        }
+        
+        .course-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .course-stats span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Tarjetas de grupos */
+        .groups-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .group-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--info);
+            position: relative;
+        }
+        
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .group-card h3 {
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+        
+        .group-card h3 span {
+            font-size: 0.9rem;
+            background: var(--info);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+        }
+        
+        .group-students {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .group-students::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .group-students::-webkit-scrollbar-thumb {
+            background: var(--gray-light);
+            border-radius: 10px;
+        }
+        
+        .group-students::-webkit-scrollbar-thumb:hover {
+            background: var(--gray);
+        }
+        
+        .student-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f9;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .student-item:last-child {
+            border-bottom: none;
+        }
+        
+        .student-item:hover {
+            background-color: var(--primary-light);
+            border-radius: 12px;
+        }
+        
+        .student-item img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .student-details {
+            flex: 1;
+        }
+        
+        .student-details h4 {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+        
+        .student-details p {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+        
+        .student-progress {
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+        
+        .student-progress .progress-circle {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .student-progress .progress-circle .outer {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            padding: 5px;
+            background: conic-gradient(var(--success) 70%, #e0e0e0 0);
+        }
+        
+        .student-progress .progress-circle .inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        /* Botón de volver */
+        .back-button {
+            background: var(--primary-light);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .back-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        /* Pestañas de contenido */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Nuevos estilos para pautas de evaluación */
+        .evaluation-guidelines {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .guideline-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid var(--warning);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .guideline-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .guideline-card h3 {
+            margin-bottom: 12px;
+            color: var(--dark);
+            font-size: 1.2rem;
+        }
+        
+        .guideline-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .guideline-card ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .guideline-card li {
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        
+        /* Estilos para banco de casos */
+        .cases-bank {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .case-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid var(--success);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .case-card h3 {
+            margin-bottom: 12px;
+            color: var(--dark);
+            font-size: 1.2rem;
+        }
+        
+        .case-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .case-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--dark);
+            font-size: 0.85rem;
+            border-top: 1px solid #f1f3f9;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .case-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Lista de chequeo */
+        .checklist-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .checklist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f9;
+        }
+        
+        .checklist-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .checklist-filters select, .checklist-filters input {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8f9fc;
+        }
+        
+        .checklist-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .checklist-table th, .checklist-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #f1f3f9;
+        }
+        
+        .checklist-table th {
+            background: var(--primary-light);
+            font-weight: 600;
+        }
+        
+        .checklist-table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .checklist-criteria {
+            width: 50%;
+        }
+        
+        .checklist-check {
+            text-align: center;
+            width: 80px;
+        }
+        
+        .checklist-check input[type="checkbox"] {
+            transform: scale(1.5);
+            cursor: pointer;
+        }
+        
+        .checklist-notes {
+            width: 30%;
+        }
+        
+        .checklist-notes input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+        }
+        
+        .add-student-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Badges para estudiantes */
+        .badges-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .badge {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .badge:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .badge.gold {
+            border-color: #ffd700;
+            background: linear-gradient(45deg, #fffaea, #fff4c4);
+        }
+        
+        .badge.silver {
+            border-color: #c0c0c0;
+            background: linear-gradient(45deg, #f8f8f8, #f0f0f0);
+        }
+        
+        .badge.bronze {
+            border-color: #cd7f32;
+            background: linear-gradient(45deg, #fdf1e8, #f9e0cc);
+        }
+        
+        .badge.blue {
+            border-color: var(--info);
+            background: linear-gradient(45deg, #e8f4fd, #cce6ff);
+        }
+        
+        .badge i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .badge.gold i {
+            color: #ffd700;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge.silver i {
+            color: #c0c0c0;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge.bronze i {
+            color: #cd7f32;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge.blue i {
+            color: var(--info);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge h4 {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .badge p {
+            font-size: 0.8rem;
+            color: var(--dark);
+            opacity: 0.8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .courses-container, .evaluation-guidelines, .cases-bank {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+            
+            .groups-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .sidebar-header h2, .sidebar-menu span, .user-info span {
+                display: none;
+            }
+            
+            .sidebar-menu i {
+                margin-right: 0;
+                font-size: 20px;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+            
+            .search-bar {
+                width: 300px;
+            }
+            
+            .semester-selector {
+                flex-direction: column;
+            }
+            
+            .user-type-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-bar {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .user-profile {
+                align-self: center;
+                margin-top: 15px;
+            }
+            
+            .courses-container, .evaluation-guidelines, .cases-bank {
+                grid-template-columns: 1fr;
+            }
+            
+            .checklist-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenedor de la aplicación -->
+    <div class="app-container">
+        <!-- Pantalla de autenticación (login/registro) -->
+        <div class="auth-container" id="authScreen">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <i class="fas fa-clinic-medical fa-3x" style="background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                    <h2>Clinic360</h2>
+                    <p>Sistema de Gestión de Historias Clínicas</p>
+                </div>
+                
+                <div class="auth-tabs">
+                    <div class="auth-tab active" id="loginTab">Iniciar Sesión</div>
+                    <div class="auth-tab" id="registerTab">Registrarse</div>
+                </div>
+                
+                <!-- Formulario de Login -->
+                <div id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Correo electrónico</label>
+                        <input type="email" id="loginEmail" placeholder="tu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Contraseña</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••">
+                    </div>
+                    <button class="btn" id="loginButton">Iniciar Sesión</button>
+                </div>
+                
+                <!-- Formulario de Registro -->
+                <div id="registerForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="registerName">Nombre completo</label>
+                        <input type="text" id="registerName" placeholder="Juan Pérez">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Correo electrónico</label>
+                        <input type="email" id="registerEmail" placeholder="tu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Contraseña</label>
+                        <input type="password" id="registerPassword" placeholder="••••••••">
+                    </div>
+                    
+                    <p style="margin-bottom: 15px; font-weight: 500;">Selecciona tu tipo de usuario:</p>
+                    <div class="user-type-selector">
+                        <div class="user-type" id="studentType">
+                            <i class="fas fa-user-graduate"></i>
+                            <h4>Estudiante</h4>
+                            <p>Accede a casos clínicos y gana insignias</p>
+                        </div>
+                        <div class="user-type" id="professorType">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <h4>Profesor</h4>
+                            <p>Crea y evalúa casos clínicos</p>
+                        </div>
+                        <div class="user-type" id="adminType">
+                            <i class="fas fa-user-shield"></i>
+                            <h4>Administrador</h4>
+                            <p>Gestiona usuarios y estadísticas</p>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" id="registerButton">Registrarse</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panel de Profesor -->
+        <div class="professor-panel" id="professorPanel" style="display: none;">
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <i class="fas fa-clinic-medical fa-2x"></i>
+                    <h2>Clinic360</h2>
+                </div>
+                <div class="user-info">
+                    <img id="professorAvatar" src="https://ui-avatars.com/api/?name=Professor+User&background=4895ef&color=fff" alt="Profesor">
+                    <div id="professorName">Dr. Carlos Mendoza</div>
+                    <div class="user-role">Profesor</div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul>
+                        <li class="active" data-panel="dashboard"><i class="fas fa-th-large"></i> <span>Dashboard</span></li>
+                        <li data-panel="courses"><i class="fas fa-book-open"></i> <span>Mis Cursos</span></li>
+                        <li data-panel="evaluation"><i class="fas fa-clipboard-check"></i> <span>Pautas de Evaluación</span></li>
+                        <li data-panel="cases"><i class="fas fa-file-medical"></i> <span>Banco de Casos</span></li>
+                        <li data-panel="students"><i class="fas fa-user-graduate"></i> <span>Estudiantes</span></li>
+                        <li data-panel="stats"><i class="fas fa-chart-line"></i> <span>Estadísticas</span></li>
+                        <li class="logout-button"><i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="header">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Buscar estudiante, grupo, caso...">
+                    </div>
+                    <div class="user-profile">
+                        <img id="professorHeaderAvatar" src="https://ui-avatars.com/api/?name=Professor+User&background=4895ef&color=fff" alt="Usuario">
+                        <span id="professorHeaderName">Dr. Carlos Mendoza</span>
+                    </div>
+                </div>
+
+                <!-- Panel de Dashboard -->
+                <div class="tab-content active" id="dashboardPanel">
+                    <h2 class="section-title"><i class="fas fa-th-large"></i> Panel del Profesor</h2>
+                    
+                    <div class="dashboard">
+                        <div class="card stat-card" onclick="showNotification('25 estudiantes activos en tus cursos')">
+                            <div class="icon-container">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="number">25</div>
+                            <div class="label">Estudiantes activos</div>
+                        </div>
+                        <div class="card stat-card" onclick="showNotification('8 casos clínicos asignados este semestre')">
+                            <div class="icon-container">
+                                <i class="fas fa-file-medical"></i>
+                            </div>
+                            <div class="number">8</div>
+                            <div class="label">Casos asignados</div>
+                        </div>
+                        <div class="card stat-card" onclick="showNotification('85% de evaluaciones completadas')">
+                            <div class="icon-container">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <div class="number">85%</div>
+                            <div class="label">Evaluaciones completadas</div>
+                        </div>
+                        <div class="card stat-card" onclick="showNotification('3.5 horas de tiempo promedio de evaluación')">
+                            <div class="icon-container">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="number">3.5h</div>
+                            <div class="label">Tiempo promedio</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title"><i class="fas fa-calendar-alt"></i> Semestre Actual: 2023-2</h3>
+                    
+                    <div class="dashboard">
+                        <div class="card" onclick="changePanel('courses')">
+                            <h3><i class="fas fa-book-open"></i> Mis Cursos</h3>
+                            <p>Gestiona tus cursos y grupos de estudiantes organizados por semestre.</p>
+                            <div class="course-stats">
+                                <span><i class="fas fa-users"></i> 3 cursos activos</span>
+                                <span><i class="fas fa-user-graduate"></i> 75 estudiantes</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card" onclick="changePanel('evaluation')">
+                            <h3><i class="fas fa-clipboard-list"></i> Pautas de Evaluación</h3>
+                            <p>Accede a las pautas metodológicas e instrumentos de evaluación (Lista de chequeo y Rúbrica).</p>
+                            <div class="course-stats">
+                                <span><i class="fas fa-list-check"></i> 5 listas de chequeo</span>
+                                <span><i class="fas fa-table"></i> 3 rúbricas</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card" onclick="changePanel('cases')">
+                            <h3><i class="fas fa-archive"></i> Banco de Casos</h3>
+                            <p>Explora el banco de casos clínicos organizados por semestre y especialidad.</p>
+                            <div class="course-stats">
+                                <span><i class="fas fa-file-medical"></i> 42 casos disponibles</span>
+                                <span><i class="fas fa-tag"></i> 6 categorías</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Cursos -->
+                <div class="tab-content" id="coursesPanel">
+                    <h2 class="section-title"><i class="fas fa-book-open"></i> Gestión de Cursos</h2>
+                    
+                    <h3 class="section-title"><i class="fas fa-calendar-alt"></i> Seleccionar Semestre</h3>
+                    <div class="semester-selector">
+                        <div class="semester-card active" data-semester="2023-2" onclick="selectSemester('2023-2')">
+                            <h3>2023-2</h3>
+                            <p>Segundo Semestre 2023</p>
+                        </div>
+                        <div class="semester-card" data-semester="2024-1" onclick="selectSemester('2024-1')">
+                            <h3>2024-1</h3>
+                            <p>Primer Semestre 2024</p>
+                        </div>
+                        <div class="semester-card" data-semester="2024-2" onclick="selectSemester('2024-2')">
+                            <h3>2024-2</h3>
+                            <p>Segundo Semestre 2024</p>
+                        </div>
+                        <div class="semester-card" data-semester="2025-1" onclick="selectSemester('2025-1')">
+                            <h3>2025-1</h3>
+                            <p>Primer Semestre 2025</p>
+                        </div>
+                    </div>
+
+                    <div id="coursesTabContent">
+                        <h3 class="section-title"><i class="fas fa-book-open"></i> Mis Cursos - Semestre 2023-2</h3>
+                        <div class="courses-container">
+                            <div class="course-card" onclick="showCourseDetails('Medicina Interna')">
+                                <h3>Medicina Interna</h3>
+                                <p>Curso de medicina interna para estudiantes de 4° semestre. Aborda patologías prevalentes en adultos.</p>
+                                <div class="course-stats">
+                                    <span><i class="fas fa-users"></i> 3 grupos</span>
+                                    <span><i class="fas fa-user-graduate"></i> 45 estudiantes</span>
+                                </div>
+                            </div>
+                            <div class="course-card" onclick="showCourseDetails('Pediatría')">
+                                <h3>Pediatría</h3>
+                                <p>Curso de pediatría para estudiantes de 6° semestre. Enfoque en el paciente pediátrico y sus particularidades.</p>
+                                <div class="course-stats">
+                                    <span><i class="fas fa-users"></i> 2 grupos</span>
+                                    <span><i class="fas fa-user-graduate"></i> 30 estudiantes</span>
+                                </div>
+                            </div>
+                            <div class="course-card" onclick="showCourseDetails('Salud Mental')">
+                                <h3>Salud Mental</h3>
+                                <p>Curso de salud mental para estudiantes de 7° semestre. Abordaje de patologías psiquiátricas comunes.</p>
+                                <div class="course-stats">
+                                    <span><i class="fas fa-users"></i> 2 grupos</span>
+                                    <span><i class="fas fa-user-graduate"></i> 28 estudiantes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="groupsTabContent" style="display: none;">
+                        <button class="back-button" onclick="showCoursesTab()">
+                            <i class="fas fa-arrow-left"></i> Volver a cursos
+                        </button>
+                        <h3 class="section-title" id="groupsTitle"><i class="fas fa-users"></i> Grupos de Medicina Interna</h3>
+                        <div class="groups-container">
+                            <div class="group-card">
+                                <h3>Grupo 1 <span>15 estudiantes</span></h3>
+                                <div class="group-students">
+                                    <div class="student-item" onclick="showStudentDetails('Ana Martínez')">
+                                        <img src="https://ui-avatars.com/api/?name=Ana+Martinez&background=4361ee&color=fff" alt="Estudiante">
+                                        <div class="student-details">
+                                            <h4>Ana Martínez</h4>
+                                            <p>5 casos completados</p>
+                                        </div>
+                                        <div class="student-progress">
+                                            <div class="progress-circle">
+                                                <div class="outer">
+                                                    <div class="inner">85%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="student-item" onclick="showStudentDetails('Carlos López')">
+                                        <img src="https://ui-avatars.com/api/?name=Carlos+Lopez&background=4cc9f0&color=fff" alt="Estudiante">
+                                        <div class="student-details">
+                                            <h4>Carlos López</h4>
+                                            <p>3 casos completados</p>
+                                        </div>
+                                        <div class="student-progress">
+                                            <div class="progress-circle">
+                                                <div class="outer">
+                                                    <div class="inner">65%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Pautas de Evaluación -->
+                <div class="tab-content" id="evaluationPanel">
+                    <h2 class="section-title"><i class="fas fa-clipboard-check"></i> Pautas de Evaluación</h2>
+                    
+                    <div class="evaluation-guidelines">
+                        <div class="guideline-card" onclick="showGuidelineDetails('Pautas Metodológicas de Evaluación')">
+                            <h3><i class="fas fa-list-check"></i> Pautas Metodológicas</h3>
+                            <p>Directrices generales para la evaluación de casos clínicos según los estándares académicos.</p>
+                            <ul>
+                                <li>Criterios de evaluación por competencias</li>
+                                <li>Escalas de valoración</li>
+                                <li>Parámetros de calificación</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="guideline-card" onclick="showChecklist()">
+                            <h3><i class="fas fa-tasks"></i> Lista de Chequeo</h3>
+                            <p>Instrumento de evaluación para verificar el cumplimiento de pasos en procedimientos clínicos.</p>
+                            <ul>
+                                <li>Evaluación de procedimientos básicos</li>
+                                <li>Verificación de pasos esenciales</li>
+                                <li>Evaluación objetiva de competencias</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="guideline-card" onclick="showGuidelineDetails('Rúbricas de Evaluación')">
+                            <h3><i class="fas fa-table"></i> Rúbricas de Evaluación</h3>
+                            <p>Instrumentos detallados para evaluar competencias clínicas con criterios específicos.</p>
+                            <ul>
+                                <li>Niveles de desempeño definidos</li>
+                                <li>Criterios de evaluación detallados</li>
+                                <li>Evaluación por competencias específicas</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title"><i class="fas fa-graduation-cap"></i> Métodos de Evaluación</h3>
+                    
+                    <div class="evaluation-guidelines">
+                        <div class="guideline-card" onclick="showMethodDetails('ECOE')">
+                            <h3><i class="fas fa-stethoscope"></i> ECOE</h3>
+                            <p>Examen Clínico Objetivo Estructurado para evaluar competencias clínicas en escenarios simulados.</p>
+                            <ul>
+                                <li>Estaciones clínicas rotativas</li>
+                                <li>Evaluación de habilidades prácticas</li>
+                                <li>Escenarios estandarizados</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="guideline-card" onclick="showMethodDetails('ECOE')">
+                            <h3><i class="fas fa-user-md"></i> Evaluación Clínica Estructurada</h3>
+                            <p>Evaluación de competencias clínicas mediante objetivos específicos y estaciones definidas.</p>
+                            <ul>
+                                <li>Objetivos de aprendizaje definidos</li>
+                                <li>Evaluación por estaciones</li>
+                                <li>Retroalimentación estructurada</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Chequeo -->
+                    <div id="checklistContent" style="display: none;">
+                        <div class="checklist-header">
+                            <h3 class="section-title"><i class="fas fa-tasks"></i> Lista de Chequeo - Evaluación de Procedimientos</h3>
+                            <button class="btn" onclick="saveChecklist()">Guardar Evaluación</button>
+                        </div>
+                        
+                        <div class="checklist-filters">
+                            <select id="checklistCourse">
+                                <option value="">Seleccionar curso</option>
+                                <option value="medicina">Medicina Interna</option>
+                                <option value="pediatria">Pediatría</option>
+                                <option value="salud-mental">Salud Mental</option>
+                            </select>
+                            
+                            <select id="checklistGroup">
+                                <option value="">Seleccionar grupo</option>
+                                <option value="grupo1">Grupo 1</option>
+                                <option value="grupo2">Grupo 2</option>
+                                <option value="grupo3">Grupo 3</option>
+                            </select>
+                            
+                            <input type="text" id="checklistSearch" placeholder="Buscar estudiante...">
+                        </div>
+                        
+                        <div class="checklist-container">
+                            <table class="checklist-table">
+                                <thead>
+                                    <tr>
+                                        <th class="checklist-criteria">Criterio de Evaluación</th>
+                                        <th class="checklist-check">Ana Martínez</th>
+                                        <th class="checklist-check">Carlos López</th>
+                                        <th class="checklist-check">María García</th>
+                                        <th class="checklist-check">Juan Pérez</th>
+                                        <th class="checklist-notes">Notas</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Preparación adecuada del material</td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-notes"><input type="text" placeholder="Observaciones..."></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Lavado de manos correcto</td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-notes"><input type="text" placeholder="Observaciones..."></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Explicación del procedimiento al paciente</td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-notes"><input type="text" placeholder="Observaciones..."></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Técnica aséptica adecuada</td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-notes"><input type="text" placeholder="Observaciones..."></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ejecución del procedimiento según protocolo</td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-notes"><input type="text" placeholder="Observaciones..."></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Manejo de complicaciones</td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-notes"><input type="text" placeholder="Observaciones..."></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Documentación del procedimiento</td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-check"><input type="checkbox"></td>
+                                        <td class="checklist-notes"><input type="text" placeholder="Observaciones..."></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <button class="add-student-btn" onclick="addStudentToChecklist()">
+                                <i class="fas fa-plus"></i> Agregar Estudiante
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Banco de Casos -->
+                <div class="tab-content" id="casesPanel">
+                    <h2 class="section-title"><i class="fas fa-archive"></i> Banco de Casos Clínicos</h2>
+                    
+                    <h3 class="section-title"><i class="fas fa-filter"></i> Filtrar por Semestre</h3>
+                    <div class="semester-selector">
+                        <div class="semester-card active" onclick="filterCases('all')">
+                            <h3>Todos</h3>
+                            <p>Todos los casos disponibles</p>
+                        </div>
+                        <div class="semester-card" onclick="filterCases('III')">
+                            <h3>III Semestre</h3>
+                            <p>Procedimientos básicos</p>
+                        </div>
+                        <div class="semester-card" onclick="filterCases('IV')">
+                            <h3>IV Semestre</h3>
+                            <p>Medicina interna – adulto y UCI</p>
+                        </div>
+                        <div class="semester-card" onclick="filterCases('V')">
+                            <h3>V Semestre</h3>
+                            <p>Cuidado de embarazadas</p>
+                        </div>
+                        <div class="semester-card" onclick="filterCases('VI')">
+                            <h3>VI Semestre</h3>
+                            <p>Pediatría</p>
+                        </div>
+                        <div class="semester-card" onclick="filterCases('VII')">
+                            <h3>VII Semestre</h3>
+                            <p>Salud mental</p>
+                        </div>
+                    </div>
+                    
+                    <div id="casesContainer">
+                        <h3 class="section-title"><i class="fas fa-file-medical"></i> Todos los Casos Clínicos</h3>
+                        <div class="cases-bank">
+                            <div class="case-card" onclick="showCaseDetails('Dolor Abdominal Crónico')">
+                                <h3>Dolor Abdominal Crónico</h3>
+                                <p>Caso de paciente con dolor abdominal recurrente. Incluye diagnóstico diferencial y abordaje terapéutico.</p>
+                                <div class="case-meta">
+                                    <span><i class="fas fa-tag"></i> IV Semestre</span>
+                                    <span><i class="fas fa-clock"></i> 45 min</span>
+                                </div>
+                            </div>
+                            
+                            <div class="case-card" onclick="showCaseDetails('Manejo de Diabetes Tipo II')">
+                                <h3>Manejo de Diabetes Tipo II</h3>
+                                <p>Caso centrado en el manejo integral de paciente con diabetes mellitus tipo 2 y comorbilidades.</p>
+                                <div class="case-meta">
+                                    <span><i class="fas fa-tag"></i> IV Semestre</span>
+                                    <span><i class="fas fa-clock"></i> 60 min</span>
+                                </div>
+                            </div>
+                            
+                            <div class="case-card" onclick="showCaseDetails('Control Prenatal')">
+                                <h3>Control Prenatal</h3>
+                                <p>Caso de control prenatal en embarazo de bajo riesgo. Incluye seguimiento y educación a la gestante.</p>
+                                <div class="case-meta">
+                                    <span><i class="fas fa-tag"></i> V Semestre</span>
+                                    <span><i class="fas fa-clock"></i> 35 min</span>
+                                </div>
+                            </div>
+                            
+                            <div class="case-card" onclick="showCaseDetails('Crisis Asmática en Pediatría')">
+                                <h3>Crisis Asmática en Pediatría</h3>
+                                <p>Manejo de crisis asmática en paciente pediátrico. Incluye abordaje diagnóstico y terapéutico.</p>
+                                <div class="case-meta">
+                                    <span><i class="fas fa-tag"></i> VI Semestre</span>
+                                    <span><i class="fas fa-clock"></i> 40 min</span>
+                                </div>
+                            </div>
+                            
+                            <div class="case-card" onclick="showCaseDetails('Trastorno de Ansiedad Generalizada')">
+                                <h3>Trastorno de Ansiedad Generalizada</h3>
+                                <p>Abordaje de paciente con trastorno de ansiedad. Incluye evaluación y plan terapéutico integral.</p>
+                                <div class="case-meta">
+                                    <span><i class="fas fa-tag"></i> VII Semestre</span>
+                                    <span><i class="fas fa-clock"></i> 50 min</span>
+                                </div>
+                            </div>
+                            
+                            <div class="case-card" onclick="showCaseDetails('Procedimientos Básicos de Enfermería')">
+                                <h3>Procedimientos Básicos de Enfermería</h3>
+                                <p>Casos prácticos de procedimientos básicos: toma de signos vitales, curación, administración de medicamentos.</p>
+                                <div class="case-meta">
+                                    <span><i class="fas fa-tag"></i> III Semestre</span>
+                                    <span><i class="fas fa-clock"></i> 30 min</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Otros paneles -->
+                <div class="tab-content" id="studentsPanel">
+                    <h2 class="section-title"><i class="fas fa-user-graduate"></i> Gestión de Estudiantes</h2>
+                    <p>Panel de gestión de estudiantes con acceso a sus progresos y evaluaciones.</p>
+                </div>
+
+                <div class="tab-content" id="statsPanel">
+                    <h2 class="section-title"><i class="fas fa-chart-line"></i> Estadísticas</h2>
+                    <p>Estadísticas detalladas del desempeño de estudiantes y cursos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de Estudiante -->
+        <div class="student-panel" id="studentPanel" style="display: none;">
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <i class="fas fa-clinic-medical fa-2x"></i>
+                    <h2>Clinic360</h2>
+                </div>
+                <div class="user-info">
+                    <img id="studentAvatar" src="https://ui-avatars.com/api/?name=Student+User&background=4cc9f0&color=fff" alt="Estudiante">
+                    <div id="studentName">Ana Martínez</div>
+                    <div class="user-role">Estudiante</div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul>
+                        <li class="active" data-panel="dashboard"><i class="fas fa-th-large"></i> <span>Dashboard</span></li>
+                        <li data-panel="my-cases"><i class="fas fa-stethoscope"></i> <span>Mis Casos</span></li>
+                        <li data-panel="my-stats"><i class="fas fa-chart-line"></i> <span>Mis Estadísticas</span></li>
+                        <li data-panel="my-badges"><i class="fas fa-award"></i> <span>Mis Insignias</span></li>
+                        <li data-panel="my-history"><i class="fas fa-history"></i> <span>Mi Historial</span></li>
+                        <li class="logout-button"><i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="header">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Buscar casos, materiales...">
+                    </div>
+                    <div class="user-profile">
+                        <img id="studentHeaderAvatar" src="https://ui-avatars.com/api/?name=Student+User&background=4cc9f0&color=fff" alt="Usuario">
+                        <span id="studentHeaderName">Ana Martínez</span>
+                    </div>
+                </div>
+
+                <!-- Panel de Dashboard del Estudiante -->
+                <div class="tab-content active" id="dashboardPanelStudent">
+                    <h2 class="section-title"><i class="fas fa-th-large"></i> Mi Panel de Estudiante</h2>
+                    
+                    <div class="dashboard">
+                        <div class="card stat-card">
+                            <div class="icon-container">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="number">5</div>
+                            <div class="label">Casos completados</div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="icon-container">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="number">350</div>
+                            <div class="label">Puntos acumulados</div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="icon-container">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <div class="number">4</div>
+                            <div class="label">Insignias obtenidas</div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="icon-container">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="number">85%</div>
+                            <div class="label">Progreso general</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title"><i class="fas fa-book-open"></i> Mi Curso Actual: Medicina Interna</h3>
+                    
+                    <div class="dashboard">
+                        <div class="card" onclick="changePanel('my-cases')">
+                            <h3><i class="fas fa-file-medical"></i> Casos Asignados</h3>
+                            <p>Accede a los casos clínicos asignados para tu curso actual.</p>
+                            <div class="course-stats">
+                                <span><i class="fas fa-file-medical"></i> 3 casos activos</span>
+                                <span><i class="fas fa-clock"></i> 2 pendientes</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card" onclick="changePanel('my-badges')">
+                            <h3><i class="fas fa-trophy"></i> Mis Logros</h3>
+                            <p>Revisa las insignias y logros que has obtenido en tu formación.</p>
+                            <div class="course-stats">
+                                <span><i class="fas fa-award"></i> 4 insignias</span>
+                                <span><i class="fas fa-star"></i> 350 puntos</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card" onclick="changePanel('my-history')">
+                            <h3><i class="fas fa-history"></i> Mi Historial</h3>
+                            <p>Consulta tu historial de casos completados y evaluaciones.</p>
+                            <div class="course-stats">
+                                <span><i class="fas fa-check-circle"></i> 5 completados</span>
+                                <span><i class="fas fa-chart-bar"></i> 85% promedio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Mis Casos (Estudiante) -->
+                <div class="tab-content" id="my-casesPanel">
+                    <h2 class="section-title"><i class="fas fa-file-medical"></i> Mis Casos Clínicos</h2>
+                    
+                    <div class="cases-bank">
+                        <div class="case-card" onclick="startCase('Dolor Abdominal Crónico')">
+                            <h3>Dolor Abdominal Crónico</h3>
+                            <p>Caso de paciente con dolor abdominal recurrente. Incluye diagnóstico diferencial y abordaje terapéutico.</p>
+                            <div class="case-meta">
+                                <span><i class="fas fa-tag"></i> En progreso</span>
+                                <span><i class="fas fa-clock"></i> 45 min</span>
+                            </div>
+                        </div>
+                        
+                        <div class="case-card" onclick="startCase('Manejo de Diabetes Tipo II')">
+                            <h3>Manejo de Diabetes Tipo II</h3>
+                            <p>Caso centrado en el manejo integral de paciente con diabetes mellitus tipo 2 y comorbilidades.</p>
+                            <div class="case-meta">
+                                <span><i class="fas fa-tag"></i> Pendiente</span>
+                                <span><i class="fas fa-clock"></i> 60 min</span>
+                            </div>
+                        </div>
+                        
+                        <div class="case-card" onclick="reviewCase('Crisis Asmática en Pediatría')">
+                            <h3>Crisis Asmática en Pediatría</h3>
+                            <p>Manejo de crisis asmática en paciente pediátrico. Incluye abordaje diagnóstico y terapéutico.</p>
+                            <div class="case-meta">
+                                <span><i class="fas fa-tag"></i> Completado</span>
+                                <span><i class="fas fa-star"></i> 92%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Mis Insignias (Estudiante) -->
+                <div class="tab-content" id="my-badgesPanel">
+                    <h2 class="section-title"><i class="fas fa-award"></i> Mis Insignias</h2>
+                    
+                    <div class="badges-container">
+                        <div class="badge gold">
+                            <i class="fas fa-crown"></i>
+                            <h4>Máximo Puntaje</h4>
+                            <p>Obtuvo 100% en un caso</p>
+                        </div>
+                        <div class="badge silver">
+                            <i class="fas fa-bolt"></i>
+                            <h4>Rápido y Eficaz</h4>
+                            <p>Completó caso en tiempo récord</p>
+                        </div>
+                        <div class="badge bronze">
+                            <i class="fas fa-book-medical"></i>
+                            <h4>Estudiante Destacado</h4>
+                            <p>5 casos completados</p>
+                        </div>
+                        <div class="badge blue">
+                            <i class="fas fa-diagnoses"></i>
+                            <h4>Diagnóstico Preciso</h4>
+                            <p>90% de aciertos en diagnósticos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Mi Historial (Estudiante) -->
+                <div class="tab-content" id="my-historyPanel">
+                    <h2 class="section-title"><i class="fas fa-history"></i> Mi Historial</h2>
+                    
+                    <div class="checklist-container">
+                        <table class="checklist-table">
+                            <thead>
+                                <tr>
+                                    <th>Casos Completados</th>
+                                    <th>Fecha</th>
+                                    <th>Calificación</th>
+                                    <th>Feedback</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Crisis Asmática en Pediatría</td>
+                                    <td>15/05/2023</td>
+                                    <td>92%</td>
+                                    <td>Excelente diagnóstico y manejo</td>
+                                </tr>
+                                <tr>
+                                    <td>Manejo de Diabetes Tipo II</td>
+                                    <td>10/05/2023</td>
+                                    <td>87%</td>
+                                    <td>Buen abordaje, revisar dosificación</td>
+                                </tr>
+                                <tr>
+                                    <td>Control Prenatal</td>
+                                    <td>05/05/2023</td>
+                                    <td>95%</td>
+                                    <td>Excelente comunicación con la paciente</td>
+                                </tr>
+                                <tr>
+                                    <td>Procedimientos Básicos</td>
+                                    <td>01/05/2023</td>
+                                    <td>89%</td>
+                                    <td>Técnica adecuada, mejorar documentación</td>
+                                </tr>
+                                <tr>
+                                    <td>Trastorno de Ansiedad</td>
+                                    <td>25/04/2023</td>
+                                    <td>78%</td>
+                                    <td>Abordaje correcto, profundizar en alternativas terapéuticas</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentUser = null;
+        let userRole = null;
+        let currentSemester = '2023-2';
+        
+        // Inicializar la aplicación cuando el DOM esté cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar event listeners para las pestañas de login/registro
+            document.getElementById('loginTab').addEventListener('click', function() {
+                switchToLogin();
+            });
+            
+            document.getElementById('registerTab').addEventListener('click', function() {
+                switchToRegister();
+            });
+            
+            // Configurar event listeners para los tipos de usuario
+            document.getElementById('studentType').addEventListener('click', function() {
+                selectUserType('student');
+            });
+            
+            document.getElementById('professorType').addEventListener('click', function() {
+                selectUserType('professor');
+            });
+            
+            document.getElementById('adminType').addEventListener('click', function() {
+                selectUserType('admin');
+            });
+            
+            // Configurar event listeners para los botones
+            document.getElementById('loginButton').addEventListener('click', login);
+            document.getElementById('registerButton').addEventListener('click', register);
+            
+            // Configurar event listeners para el menú lateral
+            const menuItems = document.querySelectorAll('.sidebar-menu li');
+            menuItems.forEach(item => {
+                if (!item.classList.contains('logout-button')) {
+                    item.addEventListener('click', function() {
+                        const panel = this.getAttribute('data-panel');
+                        changePanel(panel);
+                    });
+                }
+            });
+            
+            // Configurar event listeners para logout
+            const logoutButtons = document.querySelectorAll('.logout-button');
+            logoutButtons.forEach(button => {
+                button.addEventListener('click', logout);
+            });
+        });
+        
+        // Cambiar a la pestaña de login
+        function switchToLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginTab').classList.add('active');
+            document.getElementById('registerTab').classList.remove('active');
+        }
+        
+        // Cambiar a la pestaña de registro
+        function switchToRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('loginTab').classList.remove('active');
+            document.getElementById('registerTab').classList.add('active');
+        }
+        
+        // Seleccionar tipo de usuario
+        function selectUserType(type) {
+            const userTypes = document.querySelectorAll('.user-type');
+            userTypes.forEach(el => el.classList.remove('selected'));
+            document.getElementById(type + 'Type').classList.add('selected');
+        }
+        
+        // Registro de usuario
+        function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const selectedType = document.querySelector('.user-type.selected');
+            
+            if (!name || !email || !password || !selectedType) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            // Determinar el tipo de usuario seleccionado
+            let role = '';
+            if (selectedType.id === 'studentType') role = 'student';
+            if (selectedType.id === 'professorType') role = 'professor';
+            if (selectedType.id === 'adminType') role = 'admin';
+            
+            // Simular registro exitoso
+            currentUser = {
+                name: name,
+                email: email,
+                role: role
+            };
+            
+            userRole = role;
+            
+            // Mostrar panel según el tipo de usuario
+            showUserPanel();
+        }
+        
+        // Inicio de sesión
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                alert('Por favor ingresa tus credenciales');
+                return;
+            }
+            
+            // Simular inicio de sesión según el email
+            if (email.includes('admin')) {
+                currentUser = {
+                    name: 'Administrador',
+                    email: email,
+                    role: 'admin'
+                };
+                userRole = 'admin';
+            } else if (email.includes('profesor') || email.includes('professor')) {
+                currentUser = {
+                    name: 'Dr. Carlos Mendoza',
+                    email: email,
+                    role: 'professor'
+                };
+                userRole = 'professor';
+            } else {
+                currentUser = {
+                    name: 'Ana Martínez',
+                    email: email,
+                    role: 'student'
+                };
+                userRole = 'student';
+            }
+            
+            showUserPanel();
+        }
+        
+        // Mostrar panel según el tipo de usuario
+        function showUserPanel() {
+            // Ocultar pantalla de autenticación
+            document.getElementById('authScreen').style.display = 'none';
+            
+            // Ocultar todos los paneles primero
+            document.getElementById('professorPanel').style.display = 'none';
+            document.getElementById('studentPanel').style.display = 'none';
+            
+            // Mostrar el panel correspondiente
+            if (userRole === 'professor' || userRole === 'admin') {
+                document.getElementById('professorPanel').style.display = 'flex';
+                document.getElementById('professorName').textContent = currentUser.name;
+                document.getElementById('professorHeaderName').textContent = currentUser.name;
+            } else if (userRole === 'student') {
+                document.getElementById('studentPanel').style.display = 'flex';
+                document.getElementById('studentName').textContent = currentUser.name;
+                document.getElementById('studentHeaderName').textContent = currentUser.name;
+            }
+        }
+        
+        // Cambiar entre paneles
+        function changePanel(panelName) {
+            // Ocultar lista de chequeo si está visible
+            if (panelName !== 'evaluation') {
+                document.getElementById('checklistContent').style.display = 'none';
+            }
+            
+            // Desactivar todos los elementos del menú
+            const menuItems = document.querySelectorAll('.sidebar-menu li');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Activar el elemento seleccionado
+            document.querySelector(`.sidebar-menu li[data-panel="${panelName}"]`).classList.add('active');
+            
+            // Ocultar todos los paneles
+            const panels = document.querySelectorAll('.tab-content');
+            panels.forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Mostrar el panel seleccionado
+            if (userRole === 'student') {
+                document.getElementById(panelName + 'PanelStudent').classList.add('active');
+            } else {
+                document.getElementById(panelName + 'Panel').classList.add('active');
+            }
+        }
+        
+        // Seleccionar semestre
+        function selectSemester(semester) {
+            currentSemester = semester;
+            const semesterCards = document.querySelectorAll('.semester-card');
+            semesterCards.forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelector(`.semester-card[data-semester="${semester}"]`).classList.add('active');
+            
+            showNotification(`Semestre ${semester} seleccionado`);
+        }
+        
+        // Mostrar detalles del curso
+        function showCourseDetails(courseName) {
+            document.getElementById('coursesTabContent').style.display = 'none';
+            document.getElementById('groupsTabContent').style.display = 'block';
+            document.getElementById('groupsTitle').textContent = `Grupos de ${courseName}`;
+        }
+        
+        // Mostrar la pestaña de cursos
+        function showCoursesTab() {
+            document.getElementById('groupsTabContent').style.display = 'none';
+            document.getElementById('coursesTabContent').style.display = 'block';
+        }
+        
+        // Mostrar lista de chequeo
+        function showChecklist() {
+            // Ocultar otros contenidos de evaluación
+            const guidelineCards = document.querySelectorAll('.guideline-card');
+            guidelineCards.forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Mostrar lista de chequeo
+            document.getElementById('checklistContent').style.display = 'block';
+        }
+        
+        // Guardar evaluación de lista de chequeo
+        function saveChecklist() {
+            alert('Evaluación guardada correctamente');
+        }
+        
+        // Agregar estudiante a la lista de chequeo
+        function addStudentToChecklist() {
+            const studentName = prompt('Ingrese el nombre del estudiante:');
+            if (studentName) {
+                // En una implementación real, aquí se agregaría una columna a la tabla
+                alert(`Estudiante ${studentName} agregado a la lista de chequeo`);
+            }
+        }
+        
+        // Filtrar casos por semestre
+        function filterCases(semester) {
+            const semesterCards = document.querySelectorAll('.semester-selector .semester-card');
+            semesterCards.forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            showNotification(`Mostrando casos del ${semester === 'all' ? 'todos los semestres' : 'semestre ' + semester}`);
+        }
+        
+        // Iniciar caso clínico (estudiante)
+        function startCase(caseName) {
+            alert(`Iniciando caso: ${caseName}`);
+        }
+        
+        // Revisar caso completado (estudiante)
+        function reviewCase(caseName) {
+            alert(`Revisando caso completado: ${caseName}`);
+        }
+        
+        // Cerrar sesión
+        function logout() {
+            currentUser = null;
+            userRole = null;
+            
+            // Mostrar pantalla de autenticación
+            document.getElementById('authScreen').style.display = 'flex';
+            
+            // Ocultar todos los paneles
+            document.getElementById('professorPanel').style.display = 'none';
+            document.getElementById('studentPanel').style.display = 'none';
+            
+            // Resetear formularios
+            document.getElementById('loginForm').reset();
+            document.getElementById('registerForm').reset();
+            
+            // Volver a la pestaña de login
+            switchToLogin();
+        }
+        
+        // Mostrar notificación
+        function showNotification(message) {
+            // En una implementación real, se usaría un sistema de notificaciones más elegante
+            console.log(message);
+        }
+    </script>
+</body>
+</html>
